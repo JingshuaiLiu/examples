@@ -1,0 +1,1037 @@
+
+\documentclass[border=8pt, multi, tikz]{standalone} 
+\usepackage{import}
+\usepackage{lmodern}
+% \usetikzlibrary{backgrounds}
+
+\subimport{./layers/}{init}
+\usetikzlibrary{positioning}
+\usetikzlibrary{3d} %for including external image 
+
+\def\ConvColor{rgb:yellow,5;red,2.5;white,5}
+\def\ConvReluColor{rgb:yellow,5;red,5;white,5}
+
+\def\RRDBColor{rgb:red,1;black,0.3} % \def\PoolColor{rgb:red,1;black,0.3}
+\def\LCFIColor{rgb:blue,2;green,1;black,0.3} % \def\UnpoolColor{rgb:blue,2;green,1;black,0.3}
+
+\def\CBAMColor{rgb:magenta,5;black,7} % \def\SoftmaxColor{rgb:magenta,5;black,7}
+\def\SCIColor{rgb:blue,5;red,2.5;white,5} % \def\FcColor{rgb:blue,5;red,2.5;white,5}
+
+\def\ConcatColor{rgb:blue,1.5;red,5;white,2.5}
+
+% \def\FuseColor{rgb:magenta,7;blue,2;black,5} % \def\FcReluColor{rgb:blue,5;red,5;white,4}
+\def\FuseColor{blue} 
+
+% length
+\def\height{6}
+\def\width{0.5}
+\def\depth{6}
+
+\def\myradius{0.8}
+
+\def\myshift{0.8}
+\def\mydrop{1.}
+
+\newcommand{\copymidarrow}{\tikz \draw[-Stealth,line width=0.25mm,draw={rgb:blue,4;red,1;green,1;black,3}] (-0.3,0) -- ++(0.3,0);}
+
+\begin{document}
+\begin{tikzpicture}
+\tikzstyle{connection}=[thick,every node/.style={sloped,allow upside down},draw=\edgecolor,opacity=0.7]
+
+\tikzstyle{copyconnection}=[thick,every node/.style={sloped,allow upside down},draw={rgb:blue,4;red,1;green,1;black,3},opacity=0.7]
+
+\tikzstyle{frameconnection}=[semithick,every node/.style={sloped,allow upside down},draw={rgb:red,0;green,0.6;blue,0.5},opacity=0.7]
+
+% input
+\node[canvas is zy plane at x=0] (input) at (-\myshift/2.,0,0) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+
+% \path (0,0,0) -- ++(0,-2.*\mydrop,0) coordinate[pos=1.] (input_node);
+% \node[canvas is zy plane at x=0] (input) at (input_node) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+
+% U-net
+\pic[shift={ (0,0,0) }] at (0,0,0) % start
+    {RightBandedBox={
+        name=start,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+% \draw (input) -- node {\copymidarrow} (start-west) ;
+
+\pic[shift={ (\myshift,0,0) }] at (start-east) % down1
+    {RightBandedBox={
+        name=down1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={ (\myshift,-\mydrop,0) }] at (down1-east) % down2
+    {RightBandedBox={
+        name=down2,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={ (\myshift,-\mydrop,0) }] at (down2-east) % down3
+    {RightBandedBox={
+        name=down3,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={ (\myshift,-\mydrop,0) }] at (down3-east) % down4
+    {RightBandedBox={
+        name=down4,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+% decoder
+\pic[shift={ (\myshift,0,0) }] at (down4-east) % up4
+    {RightBandedBox={
+        name=up4,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={ (\myshift,\mydrop,0) }] at (up4-east) % up3
+    {RightBandedBox={
+        name=up3,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={ (\myshift,\mydrop,0) }] at (up3-east) % up2
+    {RightBandedBox={
+        name=up2,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={ (\myshift,\mydrop,0) }] at (up2-east) % up1
+    {RightBandedBox={
+        name=up1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={ (\myshift,0,0) }] at (up1-east) % final
+    {RightBandedBox={
+        name=final,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={ (\myshift,0,0) }] at (final-east) % tail
+    {RightBandedBox={
+        name=tail,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\path (tail-east) -- ++(\myshift/2.,0,0) coordinate[pos=1.] (image_tail_node);
+\node[canvas is zy plane at x=0] (primary_recons) at (image_tail_node) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+
+%%%%%
+% \pic[shift={ (\myshift,0,0) }] at (down4-east)
+%     {Box={
+%         name=pool_b1,
+%         caption= ,
+%         fill=\RRDBColor,
+%         opacity=0.5,
+%         height=\height/3,
+%         width=\width*3,
+%         depth=\depth/3,
+%         }
+%     };
+    
+
+% \pic[shift={ (1,0,0) }] at (pool_b1-east) 
+%     {Box={
+%         name=pool_b2,
+%         caption= ,
+%         fill=\LCFIColor,
+%         opacity=0.5,
+%         height=\height/3,
+%         width=\width*3,
+%         depth=\depth/3,
+%         }
+%     };
+
+% \pic[shift={ (1,0,0) }] at (pool_b2-east) 
+%     {Box={
+%         name=pool_b3,
+%         caption= ,
+%         fill=\CBAMColor,
+%         opacity=0.8,
+%         height=\height/3,
+%         width=\width*3,
+%         depth=\depth/3,
+%         }
+%     };
+
+% \pic[shift={ (1,0,0) }] at (pool_b3-east) 
+%     {Box={
+%         name=pool_b4,
+%         caption= ,
+%         fill=\SCIColor,
+%         opacity=0.8,
+%         height=\height/3,
+%         width=\width*3,
+%         depth=\depth/3,
+%         }
+%     };
+
+% \pic[shift={(1,0,0)}] at (pool_b4-east) {Ball={name=concat,fill=\ConcatColor,radius=\myradius,logo=$ $}};
+
+% \pic[shift={(1,0,0)}] at (concat-east) {Ball={name=fuse,fill=\FuseColor,radius=\myradius,logo=$ $}};    
+
+% paths (nodes)
+\draw [copyconnection]  (input)  -- node {\copymidarrow} (start-west);
+
+\path (start-east) -- (down1-west) coordinate[pos=0.5] (encode_mid0) ; % node between blocks in encoder
+\path (down1-east) -- (down2-west|-down1-east) coordinate[pos=0.5] (encode_mid1) ;
+\path (down2-east) -- (down3-west|-down2-east) coordinate[pos=0.5] (encode_mid2) ;
+\path (down3-east) -- (down4-west|-down3-east) coordinate[pos=0.5] (encode_mid3) ;
+
+\path (final-east) -- (tail-west) coordinate[pos=0.5] (decode_mid_final) ; % node between blocks in decoder
+\path (up1-east) -- (final-west) coordinate[pos=0.5] (decode_mid0) ;
+\path (decode_mid0) -- ++(0,\mydrop,0) coordinate[pos=1.] (decode_mid0_above) ;
+\path (up2-east) -- (up1-west|-up2-east) coordinate[pos=0.5] (decode_mid1) ;
+\path (up3-east) -- (up2-west|-up3-east) coordinate[pos=0.5] (decode_mid2) ;
+\path (up4-east) -- (up3-west|-up4-east) coordinate[pos=0.5] (decode_mid3) ;
+
+\path (final-west) -- ++(0, \mydrop/3,0) coordinate[pos=1.] (final_node) ; % node on blocks in decoder
+\path (up1-west) -- ++(0, -\mydrop/3,0) coordinate[pos=1.] (up1_node) ;
+\path (up2-west) -- ++(0, -\mydrop/3,0) coordinate[pos=1.] (up2_node) ;
+\path (up3-west) -- ++(0, -\mydrop/3,0) coordinate[pos=1.] (up3_node) ;
+
+% connections
+\draw [copyconnection]  (start-east)  -- node {\copymidarrow} (down1-west); % connections in encoder
+\draw [copyconnection]  (encode_mid1)  -- node {\copymidarrow} (down2-west-|encode_mid1) -- (down2-west);
+\draw [copyconnection]  (encode_mid2)  -- node {\copymidarrow} (down3-west-|encode_mid2) -- (down3-west);
+\draw [copyconnection]  (encode_mid3)  -- node {\copymidarrow} (down4-west-|encode_mid3) -- (down4-west);
+
+\draw [copyconnection]  (down4-east)  -- node {\copymidarrow} (up4-west); % bottleneck
+
+\draw [copyconnection]  (final-east)  -- node {\copymidarrow} (tail-west); % connections in decoder
+\draw [copyconnection]  (up1-east)  -- node {\copymidarrow} (final-west);
+\draw [copyconnection]  (up2-east) --(decode_mid1) -- node {\copymidarrow} (up1_node-|decode_mid1) -- (up1_node);
+\draw [copyconnection]  (up3-east) --(decode_mid2) -- node {\copymidarrow} (up2_node-|decode_mid2) -- (up2_node);
+\draw [copyconnection]  (up4-east) --(decode_mid3) -- node {\copymidarrow} (up3_node-|decode_mid3) -- (up3_node);
+
+% skip-connections
+\draw [copyconnection]  (encode_mid0) -- (decode_mid0_above-|encode_mid0) -- node {\copymidarrow} (decode_mid0_above) -- (final_node-|decode_mid0_above) -- (final_node);
+\draw [copyconnection]  (down1-east)  -- node {\copymidarrow} (up1-west);
+\draw [copyconnection]  (down2-east)  -- node {\copymidarrow} (up2-west);
+\draw [copyconnection]  (down3-east)  -- node {\copymidarrow} (up3-west);
+
+\draw [copyconnection]  (tail-east)  -- node {\copymidarrow} (primary_recons);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LCFI modules
+\pic[shift={ (-0.2,-\mydrop,0) }] at (decode_mid3) 
+    {Box={
+        name=lcfi3,
+        caption= ,
+        fill=\LCFIColor,
+        opacity=0.5,
+        height=\height/3,
+        width=\width*4,
+        depth=\depth/3,
+        }
+    };
+
+\pic[shift={ (-0.2,-\mydrop,0) }] at (decode_mid2) 
+    {Box={
+        name=lcfi2,
+        caption= ,
+        fill=\LCFIColor,
+        opacity=0.5,
+        height=\height/3,
+        width=\width*4,
+        depth=\depth/3,
+        }
+    };
+
+\pic[shift={ (-0.2,-\mydrop,0) }] at (decode_mid1) 
+    {Box={
+        name=lcfi1,
+        caption= ,
+        fill=\LCFIColor,
+        opacity=0.5,
+        height=\height/3,
+        width=\width*4,
+        depth=\depth/3,
+        }
+    };
+
+\pic[shift={ (-0.2,-\mydrop,0) }] at (decode_mid0) 
+    {Box={
+        name=lcfi0,
+        caption= ,
+        fill=\LCFIColor,
+        opacity=0.5,
+        height=\height/3,
+        width=\width*4,
+        depth=\depth/3,
+        }
+    };
+  
+\pic[shift={ (-0.2,-\mydrop,0) }] at (decode_mid_final) 
+    {Box={
+        name=lcfi_final,
+        caption= ,
+        fill=\LCFIColor,
+        opacity=0.5,
+        height=\height/3,
+        width=\width*4,
+        depth=\depth/3,
+        }
+    };
+
+% SCI module
+\path (lcfi0-south) -- (lcfi2-east-|lcfi0-south) coordinate[pos=1.] (concat_node) ; % concatenation
+\pic[shift={(0,0,0)}] at (concat_node) {Ball={name=concat,fill=\ConcatColor,radius=\myradius,logo=$ $}} ;
+
+\pic[shift={ (0.5*\myshift,0,0) }] at (concat-east) % SCI
+    {Box={
+        name=sci,
+        caption= ,
+        fill=\SCIColor,
+        opacity=0.8,
+        height=\height/3,
+        width=\width*3,
+        depth=\depth/3,
+        }
+    };
+
+\pic[shift={ (0.5*\myshift,0,0) }] at (sci-east) % Convolution
+    {RightBandedBox={
+        name=conv368,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };  
+
+%  attentive selection module
+\path (conv368-east) -- ++(0.5*\myshift,0,0) coordinate[pos=1.] (selection_node) ;
+
+\pic[shift={ (0.5*\myshift,\mydrop,0) }] at (selection_node) % attention convolution
+    {RightBandedBox={
+        name=model_attention_conv,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    }; 
+
+\pic[shift={ (0.5*\myshift,-\mydrop,0) }] at (selection_node) % image cascade
+    {RightBandedBox={
+        name=model_image_conv0,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (0.8*\myshift,0,0) }] at (model_image_conv0-east) % RRDB
+    {Box={
+        name=rrdb0,
+        caption= ,
+        fill=\RRDBColor,
+        opacity=0.5,
+        height=\height/3,
+        width=\width*3,
+        depth=\depth/3,
+        }
+    };
+\pic[shift={ (0.5*\myshift,0,0) }] at (rrdb0-east) % RRDB
+    {Box={
+        name=rrdb1,
+        caption= ,
+        fill=\RRDBColor,
+        opacity=0.5,
+        height=\height/3,
+        width=\width*3,
+        depth=\depth/3,
+        }
+    };
+\pic[shift={ (0.8*\myshift,0,0) }] at (rrdb1-east) % image cascade
+    {RightBandedBox={
+        name=model_image_conv1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+% intermediate outputs
+\path (model_attention_conv-east) -- ++(1.8*\myshift,0,0) coordinate[pos=1.] (attention_map_node0); % attention map node
+\path (model_attention_conv-east) -- ++(1.9*\myshift,0,0) coordinate[pos=1.] (attention_map_node1);
+\path (model_attention_conv-east) -- ++(2.0*\myshift,0,0) coordinate[pos=1.] (attention_map_node2);
+\path (model_image_conv1-east) -- ++(0.5*\myshift,0,0) coordinate[pos=1.] (image_map_node0); % image map node
+\path (model_image_conv1-east) -- ++(0.6*\myshift,0,0) coordinate[pos=1.] (image_map_node1);
+\path (model_image_conv1-east) -- ++(0.7*\myshift,0,0) coordinate[pos=1.] (image_map_node2);
+
+\node[canvas is zy plane at x=0] (attention_map0) at (attention_map_node0) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+\node[canvas is zy plane at x=0] (attention_map1) at (attention_map_node1) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+\node[canvas is zy plane at x=0] (attention_map2) at (attention_map_node2) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+
+\node[canvas is zy plane at x=0] (image_map0) at (image_map_node0) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+\node[canvas is zy plane at x=0] (image_map1) at (image_map_node1) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+\node[canvas is zy plane at x=0] (image_map2) at (image_map_node2) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+
+
+% fusion
+% \path (image_map2-east) -- ++(0.5*\myshift,\mydrop,0) coordinate[pos=1.] (fusion_node2);
+\pic[shift={(0.5*\myshift,\mydrop,0)}] at (image_map2) {Ball={name=fusion,fill=\FuseColor,radius=\myradius,logo=$ $}} ;
+
+% final output
+\path (fusion-east) -- ++(0.5*\myshift,0,0) coordinate[pos=1.] (output_node);
+\node[canvas is zy plane at x=0] (output) at (output_node) {\includegraphics[width=1cm,height=1cm]{./examples/fcn8s/cats.jpg}};
+
+% connections    
+% to LCFI
+\draw [copyconnection] (decode_mid_final) -- node {\copymidarrow} (lcfi_final-north) ;
+\draw [copyconnection] (decode_mid0) -- node {\copymidarrow} (lcfi0-north) ;
+\draw [copyconnection] (decode_mid1) -- node {\copymidarrow} (lcfi1-north) ;
+\draw [copyconnection] (decode_mid2) -- node {\copymidarrow} (lcfi2-north) ;
+\draw [copyconnection] (decode_mid3) -- node {\copymidarrow} (lcfi3-north) ;
+
+% concatenate and to SCI and conv
+\draw [copyconnection] (lcfi_final-south) -- node {\copymidarrow} (concat-north) ;
+\draw [copyconnection] (lcfi0-south) -- node {\copymidarrow} (concat-north) ; % calibration
+\draw [copyconnection] (lcfi1-east) -- node {\copymidarrow} (concat-north) ;
+\draw [copyconnection] (lcfi2-east) -- node {\copymidarrow} (concat-west) ; % calibration
+\draw [copyconnection] (lcfi3-east) -- node {\copymidarrow} (concat-west) ;
+
+\draw [copyconnection] (concat-east) -- node {\copymidarrow} (sci-west) ;
+\draw [copyconnection] (sci-east) -- node {\copymidarrow} (conv368-west) ;
+
+% connections in attentive selection module
+\draw [copyconnection]  (conv368-east) -- (selection_node) -- node {\copymidarrow} (model_attention_conv-west-|selection_node) -- (model_attention_conv-west) ;
+
+\draw [copyconnection]  (selection_node) -- node {\copymidarrow} (model_image_conv0-west-|selection_node) -- (model_image_conv0-west) ;
+\path (model_image_conv0-east) -- (rrdb0-west) coordinate[pos=0.5] (rrdb_node0) ;
+\path (rrdb1-east) -- (model_image_conv1-west) coordinate[pos=0.5] (rrdb_node1) ;
+\path (rrdb_node0) -- ++(0,0.5*\mydrop,0) coordinate[pos=1.] (rrdb_node0_above) ;
+\draw [copyconnection]  (model_image_conv0-east) -- node {\copymidarrow} (rrdb0-west);
+\draw [copyconnection]  (rrdb0-east) -- node {\copymidarrow} (rrdb1-west);
+\draw [copyconnection]  (rrdb1-east) -- node {\copymidarrow} (model_image_conv1-west);
+\draw [copyconnection]  (rrdb_node0) -- (rrdb_node0_above) -- node {\copymidarrow} (rrdb_node1|-rrdb_node0_above) -- (rrdb_node1) ; % skip-connection
+
+% to fusion
+\draw [copyconnection]  (model_attention_conv-east) -- node {\copymidarrow} (attention_map0) ;
+\draw [copyconnection]  (model_image_conv1-east) -- node {\copymidarrow} (image_map0) ;
+
+\draw [copyconnection]  (attention_map_node2) -- (fusion-north|-attention_map_node2) -- node {\copymidarrow} (fusion-north) ;
+\draw [copyconnection]  (image_map_node2) -- (fusion-south|-image_map_node2) -- node {\copymidarrow} (fusion-south) ;
+
+\draw [copyconnection]  (fusion-east) -- node {\copymidarrow} (output) ;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LCFI++
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pic[shift={ (-0.16*\myshift,-8,0) }] at (0,0,0) % start
+    {RightBandedBox={
+        name=input,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\path (input-west) -- ++(-\myshift,0,0) coordinate[pos=0.5] (start_node) ;    
+\draw [copyconnection] (start_node) -- node{\copymidarrow} (input-west);
+
+% input nodes
+\path (input-east) -- ++(0.5*\myshift,2.0*\mydrop,0) coordinate[pos=1.] (da0_input_node) ;
+\path (input-east) -- ++(0.5*\myshift,0,0) coordinate[pos=1.] (da1_input_node) ;
+\path (input-east) -- ++(0.5*\myshift,-2.0*\mydrop,0) coordinate[pos=1.] (da2_input_node) ;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% da0-LCFI
+\pic[shift={ (0.5*\myshift,0,0) }] at (da0_input_node) % head
+    {RightBandedBox={
+        name=da0_head,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+
+\pic[shift={ (\myshift,0,0) }] at (da0_head-east) % U-net
+    {RightBandedBox={
+        name=da0_start,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (da0_start-east) % U-net
+    {RightBandedBox={
+        name=da0_down1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,-0.3*\mydrop,0) }] at (da0_down1-east) % U-net
+    {RightBandedBox={
+        name=da0_b0,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (da0_b0-east) % U-net
+    {RightBandedBox={
+        name=da0_b1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0.3*\mydrop,0) }] at (da0_b1-east) % U-net
+    {RightBandedBox={
+        name=da0_up1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={(0.5*\myshift,0,0)}] at (da0_up1-east) {Ball={name=da0_concat1,fill=\ConcatColor,radius=\myradius,logo=$ $}} ; % concat    
+
+\pic[shift={ (\myshift,0,0) }] at (da0_up1-east) % U-net
+    {RightBandedBox={
+        name=da0_tail,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (da0_tail-east) % U-net
+    {RightBandedBox={
+        name=da0_dilate,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\SCIColor,
+        height=\height,
+        width={\width, \width},
+        depth=\depth,
+        }
+    };
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% da1-LCFI
+\pic[shift={ (0.5*\myshift,0,0) }] at (da1_input_node) % head
+    {RightBandedBox={
+        name=da1_head,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={(0.5*\myshift,0,0)}] at (da1_head-east) {Ball={name=da1_concat0,fill=\ConcatColor,radius=\myradius,logo=$ $}} ; % concat
+
+\pic[shift={ (0.5*\myshift,0,0) }] at (da1_concat0-east) % U-net
+    {RightBandedBox={
+        name=da1_start,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (da1_start-east) % U-net
+    {RightBandedBox={
+        name=da1_down1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,-0.3*\mydrop,0) }] at (da1_down1-east) % U-net
+    {RightBandedBox={
+        name=da1_b0,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (da1_b0-east) % U-net
+    {RightBandedBox={
+        name=da1_b1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0.3*\mydrop,0) }] at (da1_b1-east) % U-net
+    {RightBandedBox={
+        name=da1_up1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={(0.5*\myshift,0,0)}] at (da1_up1-east) {Ball={name=da1_concat1,fill=\ConcatColor,radius=\myradius,logo=$ $}} ; % concat       
+\pic[shift={ (\myshift,0,0) }] at (da1_up1-east) % U-net
+    {RightBandedBox={
+        name=da1_tail,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (da1_tail-east) % U-net
+    {RightBandedBox={
+        name=da1_dilate,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\SCIColor,
+        height=\height,
+        width={\width, \width},
+        depth=\depth,
+        }
+    };
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% da2-LCFI
+\pic[shift={ (0.5*\myshift,0,0) }] at (da2_input_node) % head
+    {RightBandedBox={
+        name=da2_head,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+
+\pic[shift={(0.5*\myshift,0,0)}] at (da2_head-east) {Ball={name=da2_concat0,fill=\ConcatColor,radius=\myradius,logo=$ $}} ; % concat
+
+\pic[shift={ (0.5*\myshift,0,0) }] at (da2_concat0-east) % U-net
+    {RightBandedBox={
+        name=da2_start,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (da2_start-east) % U-net
+    {RightBandedBox={
+        name=da2_down1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,-0.3*\mydrop,0) }] at (da2_down1-east) % U-net
+    {RightBandedBox={
+        name=da2_b0,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (da2_b0-east) % U-net
+    {RightBandedBox={
+        name=da2_b1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0.3*\mydrop,0) }] at (da2_b1-east) % U-net
+    {RightBandedBox={
+        name=da2_up1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={(0.5*\myshift,0,0)}] at (da2_up1-east) {Ball={name=da2_concat1,fill=\ConcatColor,radius=\myradius,logo=$ $}} ; % concat       
+\pic[shift={ (\myshift,0,0) }] at (da2_up1-east) % U-net
+    {RightBandedBox={
+        name=da2_tail,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (da2_tail-east) % U-net
+    {RightBandedBox={
+        name=da2_dilate,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\SCIColor,
+        height=\height,
+        width={\width, \width},
+        depth=\depth,
+        }
+    };
+
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fusion part
+\pic[shift={(\myshift,0,0)}] at (da1_dilate-east) {Ball={name=concat,fill=\ConcatColor,radius=\myradius,logo=$ $}} ;
+\pic[shift={ (0.5*\myshift,0,0) }] at (concat-east) 
+    {Box={
+        name=cbam,
+        caption= ,
+        fill=\CBAMColor,
+        opacity=0.8,
+        height=\height/3,
+        width=\width*3,
+        depth=\depth/3,
+        }
+    };
+\pic[shift={ (0.5*\myshift,0,0) }] at (cbam-east) % U-net
+    {RightBandedBox={
+        name=fuse_conv0,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (\myshift,0,0) }] at (fuse_conv0-east) % U-net
+    {RightBandedBox={
+        name=fuse_conv1,
+        caption= ,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\path (fuse_conv1-east) -- ++(0.5*\myshift,0,0) coordinate[pos=1.] (output_node) ;
+\draw [copyconnection] (fuse_conv1-east) -- node{\copymidarrow} (output_node) ;
+
+% node definition
+\path (da1_concat0-anchor) -- ++(0,1.0*\mydrop,0) coordinate[pos=1.] (da1_node1) ; % node 1
+\path (da2_concat0-anchor) -- ++(0,1.0*\mydrop,0) coordinate[pos=1.] (da2_node1) ;
+
+\path (da0_start-east) -- (da0_down1-west) coordinate[pos=0.5] (da0_node2) ; % node 2
+\path (da1_start-east) -- (da1_down1-west) coordinate[pos=0.5] (da1_node2) ; 
+\path (da2_start-east) -- (da2_down1-west) coordinate[pos=0.5] (da2_node2) ;
+
+\path (da0_concat1-anchor) -- ++(0,0,2*\mydrop) coordinate[pos=1.] (da0_node3) ; % node 3
+\path (da1_concat1-anchor) -- ++(0,0,2*\mydrop) coordinate[pos=1.] (da1_node3) ; 
+\path (da2_concat1-anchor) -- ++(0,0,2*\mydrop) coordinate[pos=1.] (da2_node3) ;
+
+\path (da0_dilate-east) -- (concat-west|-da0_dilate-east)  coordinate[pos=0.5] (da0_node4) ; % node 4
+\path (da1_dilate-east) -- (concat-west) coordinate[pos=0.5] (da1_node4) ;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% connections
+% da0 connections
+\draw [copyconnection] (da1_input_node) -- node{\copymidarrow} (da0_input_node);
+\draw [copyconnection] (da0_input_node) -- node{\copymidarrow} (da0_head-west);
+
+\draw [copyconnection] (da0_head-east) -- node{\copymidarrow} (da0_start-west);
+\draw [copyconnection] (da0_start-east) -- node{\copymidarrow} (da0_down1-west);
+
+\path (da0_down1-east) -- ++(0,-0.3*\mydrop,0) coordinate[pos=1.] (da0_down1_node) ;
+\path (da0_up1-west) -- ++(0,-0.3*\mydrop,0) coordinate[pos=1.] (da0_up1_node) ;
+
+\draw [copyconnection] (da0_down1_node) -- node{\copymidarrow} (da0_b0-west);
+\draw [copyconnection] (da0_b0-east) -- node{\copymidarrow} (da0_b1-west);
+
+\draw [copyconnection] (da0_b1-east) -- node{\copymidarrow} (da0_up1_node);
+\draw [copyconnection] (da0_up1-east) -- node{\copymidarrow} (da0_concat1-west);
+\draw [copyconnection] (da0_concat1-east) -- node{\copymidarrow} (da0_tail-west);
+\draw [copyconnection] (da0_tail-east) -- node{\copymidarrow} (da0_dilate-west);
+
+% skip connections
+\draw [copyconnection] (da0_node2) -- ++(0,0,2*\mydrop) -- node {\copymidarrow} (da0_node3) -- (da0_concat1-anchor);
+
+% to fusion
+\draw [copyconnection] (da0_dilate-east) -- (concat-north|-da0_dilate-east)  -- node{\copymidarrow} (concat-north);
+
+% da1 connections
+\draw [copyconnection] (input-east) -- node{\copymidarrow} (da1_head-west);
+\draw [copyconnection] (da1_head-east) -- node{\copymidarrow} (da1_concat0-west);
+\draw [copyconnection] (da1_concat0-east) -- node{\copymidarrow} (da1_start-west);
+\draw [copyconnection] (da1_start-east) -- node{\copymidarrow} (da1_down1-west);
+
+\path (da1_down1-east) -- ++(0,-0.3*\mydrop,0) coordinate[pos=1.] (da1_down1_node) ;
+\path (da1_up1-west) -- ++(0,-0.3*\mydrop,0) coordinate[pos=1.] (da1_up1_node) ;
+
+\draw [copyconnection] (da1_down1_node) -- node{\copymidarrow} (da1_b0-west);
+\draw [copyconnection] (da1_b0-east) -- node{\copymidarrow} (da1_b1-west);
+
+\draw [copyconnection] (da1_b1-east) -- node{\copymidarrow} (da1_up1_node);
+\draw [copyconnection] (da1_up1-east) -- node{\copymidarrow} (da1_concat1-west);
+\draw [copyconnection] (da1_concat1-east) -- node{\copymidarrow} (da1_tail-west);
+\draw [copyconnection] (da1_tail-east) -- node{\copymidarrow} (da1_dilate-west);
+
+% skip connections
+\draw [copyconnection] (da1_node2) -- ++(0,0,2*\mydrop) -- node {\copymidarrow} (da1_node3) -- (da1_concat1-anchor);
+\draw [connection] (da0_node4) -- node {\midarrow} (da1_node1-|da0_node4)  -- (da1_node1) -- node {\midarrow} (da1_concat0-north);
+
+% to fusion
+\draw [copyconnection] (da1_dilate-east) -- node{\copymidarrow} (concat-west);
+\draw [copyconnection] (concat-east) -- node{\copymidarrow} (cbam-west);
+
+\draw [copyconnection] (cbam-east) -- node{\copymidarrow} (fuse_conv0-west);
+\draw [copyconnection] (fuse_conv0-east) -- node{\copymidarrow} (fuse_conv1-west);
+
+% da2 connections
+\draw [copyconnection] (da1_input_node) -- node{\copymidarrow} (da2_input_node);
+\draw [copyconnection] (da2_input_node) -- node{\copymidarrow} (da2_head-west);
+
+\draw [copyconnection] (da2_head-east) -- node{\copymidarrow} (da2_concat0-west);
+\draw [copyconnection] (da2_concat0-east) -- node{\copymidarrow} (da2_start-west);
+\draw [copyconnection] (da2_start-east) -- node{\copymidarrow} (da2_down1-west);
+
+\path (da2_down1-east) -- ++(0,-0.3*\mydrop,0) coordinate[pos=1.] (da2_down1_node) ;
+\path (da2_up1-west) -- ++(0,-0.3*\mydrop,0) coordinate[pos=1.] (da2_up1_node) ;
+
+\draw [copyconnection] (da2_down1_node) -- node{\copymidarrow} (da2_b0-west);
+\draw [copyconnection] (da2_b0-east) -- node{\copymidarrow} (da2_b1-west);
+
+\draw [copyconnection] (da2_b1-east) -- node{\copymidarrow} (da2_up1_node);
+\draw [copyconnection] (da2_up1-east) -- node{\copymidarrow} (da2_concat1-west);
+\draw [copyconnection] (da2_concat1-east) -- node{\copymidarrow} (da2_tail-west);
+\draw [copyconnection] (da2_tail-east) -- node{\copymidarrow} (da2_dilate-west);
+
+% skip connections
+\draw [copyconnection] (da2_node2) -- ++(0,0,2*\mydrop) -- node {\copymidarrow} (da2_node3) -- (da2_concat1-anchor);
+\draw [connection] (da1_node4) -- node {\midarrow} (da2_node1-|da1_node4)  -- (da2_node1) -- node {\midarrow} (da2_concat0-north);
+
+% to fusion
+\draw [copyconnection] (da2_dilate-east) -- (concat-south|-da2_dilate-east)  -- node{\copymidarrow} (concat-south);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% annotations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% put LCFI++ in a frame
+\path (start_node) -- ++(0,-3.2,0) coordinate[pos=1.] (frame_0) ;
+\path (output_node) -- ++(0,3,0) coordinate[pos=1.] (frame_1) ;
+\draw [frameconnection] (frame_0) -- (frame_1-|frame_0)  -- (frame_1) ;
+\draw [frameconnection] (frame_1) -- (frame_0-|frame_1)  -- (frame_0) ;
+
+% module annotations
+\path (output_node) -- (frame_1) coordinate[pos=0.6] (annotate_node) ;
+
+\pic[shift={ (0.5*\myshift,0,0) }] at (annotate_node) % start
+    {RightBandedBox={
+        name=annotate_conv,
+        caption = ,
+        zlabel = \fontsize{6}{8}\selectfont \textbf{conv\_block},
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=\height,
+        width=\width,
+        depth=\depth,
+        }
+    };
+\pic[shift={ (1.8*\myshift,0,0) }] at (annotate_conv-east) % U-net
+    {RightBandedBox={
+        name=annotate_dilate,
+        caption = ,
+        zlabel = \fontsize{6}{8}\selectfont \textbf{dilated\_conv},
+        fill=\ConvColor,
+        bandfill=\SCIColor,
+        height=\height,
+        width={\width, \width},
+        depth=\depth,
+        }
+    };    
+
+\pic[shift={(0,-1.8*\mydrop,0)}] at (annotate_conv-west) {Ball={name=annotate_concat, fill=\ConcatColor,radius=\myradius,logo=$ $}} ; % concatenation
+\path (annotate_concat-south) -- ++(0.4, 0.1,0) coordinate[pos=1.] (annotate_concat_add) ;
+\node at (annotate_concat_add)  [rotate=45]  {\fontsize{6}{8}\selectfont \textbf{concatenation}} ;
+
+\pic[shift={(1.8*\myshift,0,0)}] at (annotate_concat-east) {Ball={name=annotate_fusion, fill=\FuseColor,radius=\myradius,logo=$ $}} ; % sum of products
+\path (annotate_fusion-south) -- ++(0.4, 0.1,0) coordinate[pos=1.] (annotate_fusion_add) ;
+\node at (annotate_fusion_add)  [rotate=45]  {\fontsize{6}{8}\selectfont \textbf{sum\_of\_products}} ;
+
+\pic[shift={ (0,-1.5*\mydrop,0) }] at (annotate_concat-west) % SCI
+    {Box={
+        name=annotate_sci,
+        caption= ,
+        zlabel = \fontsize{6}{8}\selectfont \textbf{SCI},
+        fill=\SCIColor,
+        opacity=0.8,
+        height=\height/3,
+        width=\width*3,
+        depth=\depth/3,
+        }
+    };    
+
+\pic[shift={ (1.6*\myshift,0,0) }] at (annotate_sci-east) % blocks
+    {Box={
+        name=annotate_lcfi,
+        caption= ,
+        zlabel = \fontsize{6}{8}\selectfont \textbf{LCFI++},
+        fill=\LCFIColor,
+        opacity=0.5,
+        height=\height/3,
+        width=\width*4,
+        depth=\depth/3,
+        }
+    };
+
+\pic[shift={ (0,-1.25*\mydrop,0) }] at (annotate_sci-west) % RRDB
+    {Box={
+        name=annotate_rrdb,
+        caption= ,
+        zlabel = \fontsize{6}{8}\selectfont \textbf{RRDB},
+        fill=\RRDBColor,
+        opacity=0.5,
+        height=\height/3,
+        width=\width*3,
+        depth=\depth/3,
+        }
+    };
+
+\pic[shift={ (1.6*\myshift,0,0) }] at (annotate_rrdb-east) 
+    {Box={
+        name=annotate_cbam,
+        caption= ,
+        zlabel = \fontsize{6}{8}\selectfont \textbf{CBAM},
+        fill=\CBAMColor,
+        opacity=0.8,
+        height=\height/3,
+        width=\width*3,
+        depth=\depth/3,
+        }
+    };
+
+\end{tikzpicture}
+\end{document} 
